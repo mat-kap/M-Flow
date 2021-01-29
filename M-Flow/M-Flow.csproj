@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net5.0-windows</TargetFramework>
+        <ApplicationIcon>Resources\M-Flow.ico</ApplicationIcon>
+        <RootNamespace>MFlow</RootNamespace>
+        <UseWPF>true</UseWPF>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <None Remove="Resources\DeleteItem.png" />
+      <Resource Include="Resources\DeleteItem.png" />
+      <None Remove="Resources\Edit.png" />
+      <Resource Include="Resources\Edit.png" />
+      <None Remove="Resources\NewItem.png" />
+      <Resource Include="Resources\NewItem.png" />
+      <None Remove="Resources\Settings.png" />
+      <Resource Include="Resources\Settings.png" />
+      <None Remove="Resources\M-Flow.png" />
+      <None Remove="Resources\M-Flow.ico" />
+      <Resource Include="Resources\M-Flow.ico" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.0.8" />
+    </ItemGroup>
+
+</Project>

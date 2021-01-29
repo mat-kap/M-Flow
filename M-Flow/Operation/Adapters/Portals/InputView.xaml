@@ -1,0 +1,36 @@
+﻿<Window x:Class="MFlow.Operation.Adapters.Portals.InputView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        SizeToContent="WidthAndHeight" MinWidth="400" MaxWidth="800" Background="WhiteSmoke" 
+        WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" Icon="../../../Resources/M-Flow.ico">
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        
+        <Grid Grid.Row="0" Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" x:Name="Caption" Margin="3" Padding="3" />
+            <TextBox Grid.Column="1" x:Name="Input" Margin="3" Padding="3" />
+        </Grid>
+
+        <Border Grid.Row="1" BorderThickness="0,1,0,0" BorderBrush="Black" Background="White" Margin="0,25,0,0" Padding="6">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                
+                <Button Grid.Column="1" Content="OK" Click="Ok_Click" Margin="3" Padding="10,3" />
+                <Button Grid.Column="2" Content="Abbrechen" Click="Cancel_Click" Margin="3" Padding="10,3" />
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

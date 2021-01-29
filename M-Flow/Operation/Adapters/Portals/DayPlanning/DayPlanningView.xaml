@@ -1,0 +1,66 @@
+﻿<Window x:Class="MFlow.Operation.Adapters.Portals.DayPlanning.DayPlanningView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Tagesplanung" Height="450" Width="500" Background="WhiteSmoke" 
+        WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow" Icon="../../../../Resources/M-Flow.ico">
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        
+        <Grid Grid.Row="0" Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBox Grid.Column="0" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" KeyUp="NameTextBox_KeyUp" Margin="3" Padding="3" />
+            <Button Grid.Column="1" ToolTip="Eintrag hinzufügen" Command="{Binding AddNewItemCommand}" Margin="3" Padding="3">
+                <Image Height="15" Width="15" Source="../../../../Resources/NewItem.png" />
+            </Button>
+
+            <ComboBox Grid.Column="2" ItemsSource="{Binding Categories}" SelectedItem="{Binding Category}" Margin="3" Padding="3" />
+            <Button Grid.Column="3" ToolTip="Kategorien verwalten" Command="{Binding ManageCategoriesCommand}" Margin="3" Padding="3">
+                <Image Height="15" Width="15" Source="../../../../Resources/Settings.png" />
+            </Button>
+        </Grid>
+        
+        <ItemsControl Grid.Row="1" ItemsSource="{Binding DayPoints}" Margin="10">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBlock Grid.Column="0" Text="{Binding Name}" Margin="3" />
+                        <Button Grid.Column="1" ToolTip="Name ändern" Command="{Binding EditCommand}" Margin="1" Padding="2">
+                            <Image Height="15" Width="15" Source="../../../../Resources/Edit.png" />
+                        </Button>
+                        <Button Grid.Column="2" ToolTip="Eintrag löschen" Command="{Binding RemoveCommand}" Margin="1" Padding="2">
+                            <Image Height="15" Width="15" Source="../../../../Resources/DeleteItem.png" />
+                        </Button>
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        
+        <Border Grid.Row="2" BorderThickness="0,1,0,0" BorderBrush="Black" Background="White" Margin="0,25,0,0" Padding="6">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                
+                <Button Grid.Column="1" Content="Abschließen" Command="{Binding FinishCommand}" Margin="3" Padding="10,3" />
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
