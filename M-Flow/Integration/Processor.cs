@@ -25,13 +25,12 @@ namespace MFlow.Integration
         /// <summary>
         /// Creates an instance of <see cref="Processor" />
         /// </summary>
-        /// <param name="workItemStore">The work item store to use.</param>
-        /// <param name="categoryStore">The category store to use.</param>
+        /// <param name="store">The event store to use.</param>
         /// <param name="timeServer">The time server to use.</param>
-        public Processor(IItemStore<WorkItem> workItemStore, IItemStore<Category> categoryStore, ITimeServer timeServer)
+        public Processor(IEventStore store, ITimeServer timeServer)
         {
-            _WorkItems = new WorkItemManager(workItemStore, timeServer);
-            _Categories = new CategoryManager(categoryStore);
+            _WorkItems = new WorkItemManager(store, timeServer);
+            _Categories = new CategoryManager(store);
             _TimeServer = timeServer;
         }
 

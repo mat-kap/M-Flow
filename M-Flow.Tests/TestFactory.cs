@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using MFlow.Data;
 using MFlow.Operation.Adapters.Providers;
 
@@ -13,7 +12,7 @@ namespace M_Flow.Tests
         /// <summary>
         /// The date for today to use in the testing environment.
         /// </summary>
-        public static readonly DateTime Today = DateTime.Today; 
+        public static readonly DateTime Today = DateTime.Today;
         
         /// <summary>
         /// Creates the test category.
@@ -61,25 +60,56 @@ namespace M_Flow.Tests
                 }
             };
         }
-
+        
         /// <summary>
-        /// Creates the category store.
+        /// Creates the event store.
         /// </summary>
-        /// <returns>The category store.</returns>
-        public static IItemStore<Category> CreateCategoryStore()
+        /// <returns>The event store.</returns>
+        public static IEventStore CreateEventStore()
         {
-            var category = CreateTestCategory();
-            return new InMemoryStore<Category>(Tuple.Create(category.Id, category));
-        }
+            var store = new InMemoryEventStore();
 
-        /// <summary>
-        /// Creates the work item store.
-        /// </summary>
-        /// <returns>The work item store.</returns>
-        public static IItemStore<WorkItem> CreateWorkItemStore()
-        {
-            var workItems = CreateTestWorkItems();
-            return new InMemoryStore<WorkItem>(workItems.Select(o => Tuple.Create(o.Id, o)).ToArray());
+            // fill in the test category 
+            var testCategory = CreateTestCategory();
+            store.Set(new Event
+            {
+                Type = "CategoryCreated",
+                EntityId = testCategory.Id, 
+                TimeStamp = Today - TimeSpan.FromDays(1),
+                Data = new()
+                {
+                    { "Name", testCategory.Name }   
+                } 
+            });
+
+            // fill in the test work items
+            var items = CreateTestWorkItems();
+            foreach (var item in items)
+            {
+                store.Set(new Event
+                {
+                    Type = "DayPointCreated",
+                    EntityId = item.Id,
+                    TimeStamp = item.Creation,
+                    Data = new()
+                    {
+                        { "Name", item.Name },
+                        { "CategoryId", item.CategoryId.ToString() }
+                    }
+                });
+
+                if (item.IsFinished)
+                {
+                    store.Set(new Event
+                    {
+                        Type = "DayPointFinished",
+                        EntityId = item.Id,
+                        TimeStamp = Today
+                    });
+                }
+            }
+
+            return store;
         }
 
         /// <summary>

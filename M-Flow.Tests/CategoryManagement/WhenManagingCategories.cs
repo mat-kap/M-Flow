@@ -8,11 +8,10 @@ namespace M_Flow.Tests.CategoryManagement
         [Fact]
         public void ShouldBeCategoriesGotRight()
         {
-            var categoryStore = TestFactory.CreateCategoryStore();
-            var workItemStore = TestFactory.CreateWorkItemStore();
+            var eventStore = TestFactory.CreateEventStore();
             var timeServer = TestFactory.CreateTimeServer();
 
-            var sut = new Processor(workItemStore, categoryStore, timeServer);
+            var sut = new Processor(eventStore, timeServer);
             var categories = sut.GetCategories();
             
             var category = TestFactory.CreateTestCategory();
@@ -23,11 +22,10 @@ namespace M_Flow.Tests.CategoryManagement
         [Fact]
         public void ShouldBeCategoryAddedRight()
         {
-            var categoryStore = TestFactory.CreateCategoryStore();
-            var workItemStore = TestFactory.CreateWorkItemStore();
+            var eventStore = TestFactory.CreateEventStore();
             var timeServer = TestFactory.CreateTimeServer();
 
-            var sut = new Processor(workItemStore, categoryStore, timeServer);
+            var sut = new Processor(eventStore, timeServer);
             var categories = sut.AddCategory("Kategorie 2");
             
             Assert.Equal(2, categories.Length);
@@ -37,12 +35,11 @@ namespace M_Flow.Tests.CategoryManagement
         [Fact]
         public void ShouldBeCategoryRemovedRight()
         {
-            var categoryStore = TestFactory.CreateCategoryStore();
-            var workItemStore = TestFactory.CreateWorkItemStore();
+            var eventStore = TestFactory.CreateEventStore();
             var timeServer = TestFactory.CreateTimeServer();
             var category = TestFactory.CreateTestCategory();
 
-            var sut = new Processor(workItemStore, categoryStore, timeServer);
+            var sut = new Processor(eventStore, timeServer);
             var categories = sut.RemoveCategory(category.Id);
             
             Assert.Empty(categories);
@@ -51,12 +48,11 @@ namespace M_Flow.Tests.CategoryManagement
         [Fact]
         public void ShouldBeCategoryNameChangedRight()
         {
-            var categoryStore = TestFactory.CreateCategoryStore();
-            var workItemStore = TestFactory.CreateWorkItemStore();
+            var eventStore = TestFactory.CreateEventStore();
             var timeServer = TestFactory.CreateTimeServer();
             var category = TestFactory.CreateTestCategory();
 
-            var sut = new Processor(workItemStore, categoryStore, timeServer);
+            var sut = new Processor(eventStore, timeServer);
             var categories = sut.ChangeCategoryName(category.Id, "Geänderte Kategorie");
             
             Assert.Single(categories);

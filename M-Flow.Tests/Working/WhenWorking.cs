@@ -1,5 +1,6 @@
 ﻿using System;
 using MFlow.Integration;
+using MFlow.Operation.Domain;
 using Xunit;
 
 namespace M_Flow.Tests.Working
@@ -9,12 +10,11 @@ namespace M_Flow.Tests.Working
         [Fact]
         public void ShouldStartWorkRight()
         {
-            var categoryStore = TestFactory.CreateCategoryStore();
-            var workItemStore = TestFactory.CreateWorkItemStore();
+            var eventStore = TestFactory.CreateEventStore();
             var timeServer = TestFactory.CreateTimeServer();
             var workItems = TestFactory.CreateTestWorkItems();
             
-            var sut = new Processor(workItemStore, categoryStore, timeServer);
+            var sut = new Processor(eventStore, timeServer);
             var dayPoints = sut.StartWork();
 
             var expectedDayPoints = new[] {workItems[0], workItems[2]};
@@ -24,12 +24,11 @@ namespace M_Flow.Tests.Working
         [Fact]
         public void ShouldStartFullConcentrationRight()
         {
-            var categoryStore = TestFactory.CreateCategoryStore();
-            var workItemStore = TestFactory.CreateWorkItemStore();
+            var eventStore = TestFactory.CreateEventStore();
             var timeServer = TestFactory.CreateTimeServer();
             var workItems = TestFactory.CreateTestWorkItems();
 
-            var sut = new Processor(workItemStore, categoryStore, timeServer);
+            var sut = new Processor(eventStore, timeServer);
 
             var isFinished = false;
             var elapsedTime = TimeSpan.Zero;
@@ -64,19 +63,19 @@ namespace M_Flow.Tests.Working
             Assert.Equal(100.0, elapsedProgress);
             Assert.True(isFinished);
 
-            var workItem = workItemStore.Read(workItems[0].Id);
-            Assert.Equal(1, workItem.WorkingPhases);
+            var workItemManager = new WorkItemManager(eventStore, timeServer);
+            var workItem = workItemManager.Get(workItems[0].Id);
+            Assert.Single(workItem.WorkingPhases);
         }
         
         [Fact]
         public void ShouldStartAndCancelConcentrationRight()
         {
-            var categoryStore = TestFactory.CreateCategoryStore();
-            var workItemStore = TestFactory.CreateWorkItemStore();
+            var eventStore = TestFactory.CreateEventStore();
             var timeServer = TestFactory.CreateTimeServer();
             var workItems = TestFactory.CreateTestWorkItems();
 
-            var sut = new Processor(workItemStore, categoryStore, timeServer);
+            var sut = new Processor(eventStore, timeServer);
 
             var isFinished = false;
             var elapsedTime = TimeSpan.Zero;
@@ -99,18 +98,18 @@ namespace M_Flow.Tests.Working
             Assert.Equal(50.0, elapsedProgress);
             Assert.False(isFinished);
 
-            var workItem = workItemStore.Read(workItems[0].Id);
-            Assert.Equal(0, workItem.WorkingPhases);
+            var workItemManager = new WorkItemManager(eventStore, timeServer);
+            var workItem = workItemManager.Get(workItems[0].Id);
+            Assert.Empty(workItem.WorkingPhases);
         }
         
         [Fact]
         public void ShouldStartFullBreakRight()
         {
-            var categoryStore = TestFactory.CreateCategoryStore();
-            var workItemStore = TestFactory.CreateWorkItemStore();
+            var eventStore = TestFactory.CreateEventStore();
             var timeServer = TestFactory.CreateTimeServer();
 
-            var sut = new Processor(workItemStore, categoryStore, timeServer);
+            var sut = new Processor(eventStore, timeServer);
 
             var isFinished = false;
             var elapsedTime = TimeSpan.Zero;
@@ -146,11 +145,10 @@ namespace M_Flow.Tests.Working
         [Fact]
         public void ShouldStartAndCancelBreakRight()
         {
-            var categoryStore = TestFactory.CreateCategoryStore();
-            var workItemStore = TestFactory.CreateWorkItemStore();
+            var eventStore = TestFactory.CreateEventStore();
             var timeServer = TestFactory.CreateTimeServer();
 
-            var sut = new Processor(workItemStore, categoryStore, timeServer);
+            var sut = new Processor(eventStore, timeServer);
 
             var isFinished = false;
             var elapsedTime = TimeSpan.Zero;
@@ -177,15 +175,15 @@ namespace M_Flow.Tests.Working
         [Fact]
         public void ShouldBeFinishPointRight()
         {
-            var categoryStore = TestFactory.CreateCategoryStore();
-            var workItemStore = TestFactory.CreateWorkItemStore();
+            var eventStore = TestFactory.CreateEventStore();
             var timeServer = TestFactory.CreateTimeServer();
             var workItems = TestFactory.CreateTestWorkItems();
 
-            var sut = new Processor(workItemStore, categoryStore, timeServer);
+            var sut = new Processor(eventStore, timeServer);
             sut.FinishPoint(workItems[0].Id);
 
-            var workItem = workItemStore.Read(workItems[0].Id);
+            var workItemManager = new WorkItemManager(eventStore, timeServer);
+            var workItem = workItemManager.Get(workItems[0].Id);
             Assert.True(workItem.IsFinished);
         }
     }

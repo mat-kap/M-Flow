@@ -9,11 +9,10 @@ namespace M_Flow.Tests.DayPlanning
         [Fact]
         public void ShouldStartDayPlanningRight()
         {
-            var categoryStore = TestFactory.CreateCategoryStore();
-            var workItemStore = TestFactory.CreateWorkItemStore();
+            var eventStore = TestFactory.CreateEventStore();
             var timeServer = TestFactory.CreateTimeServer();
 
-            var sut = new Processor(workItemStore, categoryStore, timeServer);
+            var sut = new Processor(eventStore, timeServer);
             var (dayPoints, categories) = sut.StartDayPlanning();
 
             var workItems = TestFactory.CreateTestWorkItems();
@@ -28,12 +27,11 @@ namespace M_Flow.Tests.DayPlanning
         [Fact]
         public void ShouldBeDayPointAddedRight()
         {
-            var categoryStore = TestFactory.CreateCategoryStore();
-            var workItemStore = TestFactory.CreateWorkItemStore();
+            var eventStore = TestFactory.CreateEventStore();
             var timeServer = TestFactory.CreateTimeServer();
             var category = TestFactory.CreateTestCategory();
 
-            var sut = new Processor(workItemStore, categoryStore, timeServer);
+            var sut = new Processor(eventStore, timeServer);
             var dayPoints = sut.AddNewDayPoint("Punkt 4", category);
             
             Assert.Equal(3, dayPoints.Length);
@@ -43,12 +41,11 @@ namespace M_Flow.Tests.DayPlanning
         [Fact]
         public void ShouldBeDayPointRemovedRight()
         {
-            var categoryStore = TestFactory.CreateCategoryStore();
-            var workItemStore = TestFactory.CreateWorkItemStore();
+            var eventStore = TestFactory.CreateEventStore();
             var timeServer = TestFactory.CreateTimeServer();
             var workItems = TestFactory.CreateTestWorkItems();
 
-            var sut = new Processor(workItemStore, categoryStore, timeServer);
+            var sut = new Processor(eventStore, timeServer);
             var dayPoints = sut.RemoveDayPoint(workItems[0].Id);
             
             var expectedDayPoints = new[] {workItems[2]};
@@ -58,12 +55,11 @@ namespace M_Flow.Tests.DayPlanning
         [Fact]
         public void ShouldBeDayPointNameChangedRight()
         {
-            var categoryStore = TestFactory.CreateCategoryStore();
-            var workItemStore = TestFactory.CreateWorkItemStore();
+            var eventStore = TestFactory.CreateEventStore();
             var timeServer = TestFactory.CreateTimeServer();
             var workItems = TestFactory.CreateTestWorkItems();
 
-            var sut = new Processor(workItemStore, categoryStore, timeServer);
+            var sut = new Processor(eventStore, timeServer);
             var dayPoints = sut.ChangeDayPointName(workItems[0].Id, "Punkt 1 (geändert)");
 
             Assert.Equal(2, dayPoints.Length);

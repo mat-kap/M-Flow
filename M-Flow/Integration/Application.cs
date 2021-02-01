@@ -29,10 +29,9 @@ namespace MFlow.Integration
         public Application()
         {
             var appFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments), "M-Flow");
-            var workItemStore = new FileStore<WorkItem>(Path.Combine(appFolder, "WorkItems"));
-            var categoryStore = new FileStore<Category>(Path.Combine(appFolder, "Categories"));
+            var eventStore = new EventStore(Path.Combine(appFolder, "Events"));
             var timeServer = new TimeServer();
-            _Processor = new Processor(workItemStore, categoryStore, timeServer);
+            _Processor = new Processor(eventStore, timeServer);
         }
 
         #endregion
@@ -101,8 +100,8 @@ namespace MFlow.Integration
             };
             
             var (dayPoints, categories) = _Processor.StartDayPlanning();
-            viewModel.Update(dayPoints);
             viewModel.Update(categories);
+            viewModel.Update(dayPoints);
 
             view.ShowDialog();
         }

@@ -12,7 +12,7 @@ namespace MFlow.Operation.Domain
     {
         #region Fields
 
-        readonly IItemStore<Category> _Store;
+        readonly IEventStore _Store;
 
         #endregion
 
@@ -21,8 +21,8 @@ namespace MFlow.Operation.Domain
         /// <summary>
         /// Creates an instance of <see cref="CategoryManager"/>
         /// </summary>
-        /// <param name="store">The category store.</param>
-        public CategoryManager(IItemStore<Category> store)
+        /// <param name="store">The event store.</param>
+        public CategoryManager(IEventStore store)
         {
             _Store = store;
         }
@@ -38,7 +38,11 @@ namespace MFlow.Operation.Domain
         public Category[] GetAll()
         {
             var ids = _Store.GetIds();
-            return ids.Select(_Store.Read).OrderBy(o => o.Name).ToArray();
+            return ids
+                .Select(BuildCategory)
+                .Where(o => o != null)
+                .OrderBy(o => o.Name)
+                .ToArray();
         }
 
         /// <summary>
@@ -47,13 +51,16 @@ namespace MFlow.Operation.Domain
         /// <param name="name">The name.</param>
         public void CreateCategory(string name)
         {
-            var item = new Category
+            _Store.Set(new Event
             {
-                Id = Guid.NewGuid(),
-                Name = name
-            };
-            
-            Save(item);
+                Type = "CategoryCreated",
+                EntityId = Guid.NewGuid(),
+                TimeStamp = DateTime.Now,
+                Data = new()
+                {
+                    { "Name", name }
+                }
+            });
         }
 
         /// <summary>
@@ -62,8 +69,12 @@ namespace MFlow.Operation.Domain
         /// <param name="id">The identifier of the category.</param>
         public void DeleteCategory(Guid id)
         {
-            var item = Get(id);
-            Delete(item);
+            _Store.Set(new Event
+            {
+                Type = "ItemDeleted",
+                EntityId = id,
+                TimeStamp = DateTime.Now
+            });
         }
 
         /// <summary>
@@ -73,39 +84,52 @@ namespace MFlow.Operation.Domain
         /// <param name="name">The new name.</param>
         public void ChangeCategoryName(Guid id, string name)
         {
-            var item = Get(id);
-            item.Name = name;
-            Save(item);
+            _Store.Set(new Event
+            {
+                Type = "NameChanged",
+                EntityId = id, 
+                TimeStamp = DateTime.Now,
+                Data = new()
+                {
+                    { "Name", name }
+                }
+            });
         }
-
+        
         /// <summary>
-        /// Saves the category.
-        /// </summary>
-        /// <param name="item">The category.</param>
-        void Save(Category item)
-        {
-            _Store.Write(item.Id, item);
-        }
-
-        /// <summary>
-        /// Deletes the category.
-        /// </summary>
-        /// <param name="item">The category.</param>
-        void Delete(Category item)
-        {
-            _Store.Delete(item.Id);
-        }
-
-        /// <summary>
-        /// Gets the category with the specified identifier.
+        /// Builds the category with the specified identifier.
         /// </summary>
         /// <param name="id">The identifier of the category.</param>
-        /// <returns>The category.</returns>
-        Category Get(Guid id)
+        /// <returns>The built category or null if deleted.</returns>
+        Category BuildCategory(Guid id)
         {
-            return _Store.Read(id);
-        }
+            Category category = null;
+            
+            var events = _Store.Get(id);
+            foreach (var @event in events)
+            {
+                switch (@event.Type)
+                {
+                    case "CategoryCreated":
+                        category ??= new Category
+                        {
+                            Id = id, 
+                            Name = @event.Data["Name"]
+                        };
+                        break;
+                    case "NameChanged":
+                        if (category != null)
+                            category.Name = @event.Data["Name"];
+                        break;
+                    case "ItemDeleted":
+                        category = null;
+                        break;
+                }
+            }
 
+            return category;
+        }
+        
         #endregion
     }
 }

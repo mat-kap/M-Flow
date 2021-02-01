@@ -12,7 +12,7 @@ namespace MFlow.Data
         /// <summary>
         /// Gets or sets the identifier.
         /// </summary>
-        public Guid Id { get; set; } 
+        public Guid Id { get; init; } 
 
         /// <summary>
         /// Gets or sets the name.
@@ -42,7 +42,7 @@ namespace MFlow.Data
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((Category) obj);
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace MFlow.Data
 {
@@ -12,12 +13,12 @@ namespace MFlow.Data
         /// <summary>
         /// Gets or sets the identifier.
         /// </summary>
-        public Guid Id { get; set; } 
+        public Guid Id { get; init; } 
         
         /// <summary>
         /// Gets or sets the creation date.
         /// </summary>
-        public DateTime Creation { get; set; }
+        public DateTime Creation { get; init; }
 
         /// <summary>
         /// Gets or sets the name.
@@ -27,12 +28,12 @@ namespace MFlow.Data
         /// <summary>
         /// Gets or sets the identifier of the associated category.  
         /// </summary>
-        public Guid CategoryId { get; set; }
-        
+        public Guid CategoryId { get; init; }
+
         /// <summary>
         /// Gets or sets the count of the working phases. 
         /// </summary>
-        public int WorkingPhases { get; set; }
+        public List<DateTime> WorkingPhases { get; } = new();
         
         /// <summary>
         /// Gets or sets the finished state. 
@@ -51,7 +52,21 @@ namespace MFlow.Data
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Id.Equals(other.Id) && Creation.Equals(other.Creation) && Name == other.Name && CategoryId.Equals(other.CategoryId) && WorkingPhases == other.WorkingPhases && IsFinished == other.IsFinished;
+
+            if (!Id.Equals(other.Id) || !Creation.Equals(other.Creation) || Name != other.Name ||
+                !CategoryId.Equals(other.CategoryId) || IsFinished != other.IsFinished || 
+                WorkingPhases.Count != other.WorkingPhases.Count)
+            {
+                return false;
+            }
+
+            for (var index = 0; index < WorkingPhases.Count; index++)
+            {
+                if (WorkingPhases[index] != other.WorkingPhases[index])
+                    return false;
+            }
+
+            return true;
         }
 
         /// <summary>Determines whether the specified object is equal to the current object.</summary>
@@ -62,7 +77,7 @@ namespace MFlow.Data
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((WorkItem) obj);
         }
 

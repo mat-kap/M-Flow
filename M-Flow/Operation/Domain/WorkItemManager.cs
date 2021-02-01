@@ -13,7 +13,7 @@ namespace MFlow.Operation.Domain
     {
         #region Fields
 
-        readonly IItemStore<WorkItem> _Store;
+        readonly IEventStore _Store;
         readonly ITimeServer _TimeServer;
 
         #endregion
@@ -23,9 +23,9 @@ namespace MFlow.Operation.Domain
         /// <summary>
         /// Creates an instance of <see cref="WorkItemManager"/>
         /// </summary>
-        /// <param name="store">The work item store.</param>
+        /// <param name="store">The event store.</param>
         /// <param name="timeServer">The time server.</param>
-        public WorkItemManager(IItemStore<WorkItem> store, ITimeServer timeServer)
+        public WorkItemManager(IEventStore store, ITimeServer timeServer)
         {
             _Store = store;
             _TimeServer = timeServer;
@@ -55,9 +55,16 @@ namespace MFlow.Operation.Domain
         /// <param name="name">The new name.</param>
         public void ChangeWorkItemName(Guid id, string name)
         {
-            var item = Get(id);
-            item.Name = name;
-            Save(item);
+            _Store.Set(new Event
+            {
+                Type = "NameChanged",
+                EntityId = id,
+                TimeStamp = DateTime.Now,
+                Data = new()
+                {
+                    { "Name", name }
+                }
+            });
         }
 
         /// <summary>
@@ -66,9 +73,12 @@ namespace MFlow.Operation.Domain
         /// <param name="id">The identifier of the work item.</param>
         public void FinishPhase(Guid id)
         {
-            var item = Get(id);
-            item.WorkingPhases++;
-            Save(item);
+            _Store.Set(new Event
+            {
+                Type = "WorkingPhaseFinished",
+                EntityId = id,
+                TimeStamp = DateTime.Now
+            });
         }
 
         /// <summary>
@@ -77,9 +87,12 @@ namespace MFlow.Operation.Domain
         /// <param name="id">The identifier of the work item.</param>
         public void FinishWork(Guid id)
         {
-            var item = Get(id);
-            item.IsFinished = true;
-            Save(item);
+            _Store.Set(new Event
+            {
+                Type = "DayPointFinished",
+                EntityId = id,
+                TimeStamp = DateTime.Now
+            });
         }
 
         /// <summary>
@@ -89,15 +102,17 @@ namespace MFlow.Operation.Domain
         /// <param name="categoryId">The identifier of the category.</param>
         public void CreateWorkItem(string name, Guid categoryId)
         {
-            var item = new WorkItem
+            _Store.Set(new Event
             {
-                Id = Guid.NewGuid(),
-                Creation = DateTime.Now,
-                Name = name,
-                CategoryId = categoryId
-            };
-            
-            Save(item);
+                Type = "DayPointCreated",
+                EntityId = Guid.NewGuid(),
+                TimeStamp = DateTime.Now,
+                Data = new()
+                {
+                    { "Name", name },
+                    { "CategoryId", categoryId.ToString() }
+                }
+            });
         }
 
         /// <summary>
@@ -106,8 +121,12 @@ namespace MFlow.Operation.Domain
         /// <param name="id">The identifier of the work item.</param>
         public void DeleteWorkItem(Guid id)
         {
-            var item = Get(id);
-            Delete(item);
+            _Store.Set(new Event
+            {
+                Type = "ItemDeleted",
+                EntityId = id,
+                TimeStamp = DateTime.Now
+            });
         }
         
         /// <summary>
@@ -117,7 +136,40 @@ namespace MFlow.Operation.Domain
         /// <returns>The work item.</returns>
         public WorkItem Get(Guid id)
         {
-            return _Store.Read(id);
+            WorkItem item = null;
+            
+            var events = _Store.Get(id);
+            foreach (var @event in events)
+            {
+                switch (@event.Type)
+                {
+                    case "DayPointCreated":
+                        item ??= new WorkItem
+                        {
+                            Id = id, 
+                            Creation = @event.TimeStamp,
+                            Name = @event.Data["Name"],
+                            CategoryId = Guid.Parse(@event.Data["CategoryId"])
+                        };
+                        break;
+                    case "DayPointFinished":
+                        if (item != null)
+                            item.IsFinished = true;
+                        break;
+                    case "WorkingPhaseFinished":
+                        item?.WorkingPhases.Add(@event.TimeStamp);
+                        break;
+                    case "NameChanged":
+                        if (item != null)
+                            item.Name = @event.Data["Name"];
+                        break;
+                    case "ItemDeleted":
+                        item = null;
+                        break;
+                }
+            }
+
+            return item;
         }
 
         /// <summary>
@@ -127,25 +179,10 @@ namespace MFlow.Operation.Domain
         IEnumerable<WorkItem> GetAll()
         {
             var ids = _Store.GetIds();
-            return ids.Select(_Store.Read).OrderBy(o => o.Name);
-        }
-
-        /// <summary>
-        /// Saves the work item.
-        /// </summary>
-        /// <param name="item">The work item.</param>
-        void Save(WorkItem item)
-        {
-            _Store.Write(item.Id, item);
-        }
-
-        /// <summary>
-        /// Deletes the work item.
-        /// </summary>
-        /// <param name="item">The work item.</param>
-        void Delete(WorkItem item)
-        {
-            _Store.Delete(item.Id);
+            return ids
+                .Select(Get)
+                .Where(o => o != null)
+                .OrderBy(o => o.Name);
         }
         
         /// <summary>
@@ -168,8 +205,14 @@ namespace MFlow.Operation.Domain
         {
             return items.Where(o =>
             {
+                if (o.Creation.Year < today.Year)
+                    return true;
+
                 if (o.Creation.Year > today.Year)
                     return false;
+
+                if (o.Creation.Month < today.Month)
+                    return true;
 
                 if (o.Creation.Month > today.Month)
                     return false;

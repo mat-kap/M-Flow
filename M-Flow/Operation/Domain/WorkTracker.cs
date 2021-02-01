@@ -18,7 +18,7 @@ namespace MFlow.Operation.Domain
         /// <returns>The description (name and phase).</returns>
         public static Tuple<string, string> GetWorkItemDescription(WorkItem item)
         {
-            return Tuple.Create(item.Name, $"Phase {item.WorkingPhases + 1}");
+            return Tuple.Create(item.Name, $"Phase {item.WorkingPhases.Count + 1}");
         }
         
         /// <summary>
