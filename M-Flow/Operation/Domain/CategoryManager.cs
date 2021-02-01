@@ -46,6 +46,16 @@ namespace MFlow.Operation.Domain
         }
 
         /// <summary>
+        /// Gets the category with the specified identifier.
+        /// </summary>
+        /// <param name="id">The identifier of the category.</param>
+        /// <returns>The category.</returns>
+        public Category Get(Guid id)
+        {
+            return BuildCategory(id);
+        }
+
+        /// <summary>
         /// Creates and saves a category item.
         /// </summary>
         /// <param name="name">The name.</param>

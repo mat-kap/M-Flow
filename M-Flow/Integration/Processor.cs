@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using MFlow.Data;
 using MFlow.Operation.Adapters.Providers;
 using MFlow.Operation.Domain;
@@ -189,6 +190,46 @@ namespace MFlow.Integration
         #endregion
         
         #region Protocoll
+
+        /// <summary>
+        /// Opens the working protocol.
+        /// </summary>
+        /// <returns>The years with data, selected year and month and the working days of the selected month.</returns>
+        public Tuple<int[], int, int, WorkingDay[]> OpenWorkingProtocol()
+        {
+            var year = _TimeServer.GetCurrentYear();
+            var month = _TimeServer.GetCurrentMonth();
+            var workItems = _WorkItems.GetAll();
+            var years = workItems.SelectMany(o => o.WorkingPhases).Select(o => o.Year).Distinct().ToArray();
+            var categories = _Categories.GetAll();
+            var workingDays = WorkingProtocol.CreateProtocol(year, month, workItems, categories, ConcentrationPhaseDuration);
+            return Tuple.Create(years, year, month, workingDays);
+        }
+        
+        /// <summary>
+        /// Creates the working protocol.
+        /// </summary>
+        /// <param name="year">The year.</param>
+        /// <param name="month">The month.</param>
+        /// <returns>The the working days of the selected month.</returns>
+        public WorkingDay[] CreateWorkingProtocol(int year, int month)
+        {
+            var workItems = _WorkItems.GetAll();
+            var categories = _Categories.GetAll();
+            return WorkingProtocol.CreateProtocol(year, month, workItems, categories, ConcentrationPhaseDuration);
+        }
+
+        /// <summary>
+        /// Opens the work item details. 
+        /// </summary>
+        /// <param name="workItemId">The identifier of the work item.</param>
+        /// <returns>The work item details.</returns>
+        public WorkItemDetails OpenWorkItemDetails(Guid workItemId)
+        {
+            var workItem = _WorkItems.Get(workItemId);
+            var category = _Categories.Get(workItem.CategoryId);
+            return WorkingProtocol.CreateDetails(workItem, category, ConcentrationPhaseDuration);
+        }
         
         #endregion
         

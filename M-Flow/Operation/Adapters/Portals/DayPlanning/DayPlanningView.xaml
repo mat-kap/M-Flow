@@ -30,36 +30,38 @@
             </Button>
         </Grid>
         
-        <ItemsControl Grid.Row="1" ItemsSource="{Binding DayPoints}" Margin="10">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Name}" Margin="3,3,3,0" />
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Category}" Margin="13,0,3,3" 
-                                   FontStyle="Italic" Foreground="DimGray" />
-                        
-                        <Button Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" ToolTip="Name ändern" 
-                                Command="{Binding EditCommand}" Margin="1" Padding="2" VerticalAlignment="Center">
-                            <Image Height="15" Width="15" Source="../../../../Resources/Edit.png" />
-                        </Button>
-                        <Button Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" ToolTip="Eintrag löschen" 
-                                Command="{Binding RemoveCommand}" Margin="1" Padding="2" VerticalAlignment="Center">
-                            <Image Height="15" Width="15" Source="../../../../Resources/DeleteItem.png" />
-                        </Button>
-                    </Grid>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+        <ScrollViewer Grid.Row="1" Margin="10" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding DayPoints}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Name}" Margin="3,3,3,0" />
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Category}" Margin="13,0,3,3" 
+                                       FontStyle="Italic" Foreground="DimGray" />
+                            
+                            <Button Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" ToolTip="Name ändern" 
+                                    Command="{Binding EditCommand}" Margin="1" Padding="2" VerticalAlignment="Center">
+                                <Image Height="15" Width="15" Source="../../../../Resources/Edit.png" />
+                            </Button>
+                            <Button Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" ToolTip="Eintrag löschen" 
+                                    Command="{Binding RemoveCommand}" Margin="1" Padding="2" VerticalAlignment="Center">
+                                <Image Height="15" Width="15" Source="../../../../Resources/DeleteItem.png" />
+                            </Button>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
         
         <Border Grid.Row="2" BorderThickness="0,1,0,0" BorderBrush="Black" Background="White" Margin="0,25,0,0" Padding="6">
             <Grid>

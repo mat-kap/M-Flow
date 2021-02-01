@@ -23,27 +23,29 @@
             </Button>
         </Grid>
         
-        <ItemsControl Grid.Row="1" ItemsSource="{Binding Categories}" Margin="10">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        
-                        <TextBlock Grid.Column="0" Text="{Binding Name}" Margin="3" />
-                        <Button Grid.Column="1" ToolTip="Name ändern" Command="{Binding EditCommand}" Margin="1" Padding="2">
-                            <Image Height="15" Width="15" Source="../../../../Resources/Edit.png" />
-                        </Button>
-                        <Button Grid.Column="2" ToolTip="Eintrag löschen" Command="{Binding RemoveCommand}" Margin="1" Padding="2">
-                            <Image Height="15" Width="15" Source="../../../../Resources/DeleteItem.png" />
-                        </Button>
-                    </Grid>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+        <ScrollViewer Grid.Row="1" Margin="10" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding Categories}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            
+                            <TextBlock Grid.Column="0" Text="{Binding Name}" Margin="3" />
+                            <Button Grid.Column="1" ToolTip="Name ändern" Command="{Binding EditCommand}" Margin="1" Padding="2">
+                                <Image Height="15" Width="15" Source="../../../../Resources/Edit.png" />
+                            </Button>
+                            <Button Grid.Column="2" ToolTip="Eintrag löschen" Command="{Binding RemoveCommand}" Margin="1" Padding="2">
+                                <Image Height="15" Width="15" Source="../../../../Resources/DeleteItem.png" />
+                            </Button>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
         
         <Border Grid.Row="2" BorderThickness="0,1,0,0" BorderBrush="Black" Background="White" Margin="0,25,0,0" Padding="6">
             <Grid>

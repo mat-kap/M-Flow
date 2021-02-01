@@ -93,6 +93,24 @@ namespace MFlow.Operation.Adapters.Providers
         }
 
         /// <summary>
+        /// Gets the current year.
+        /// </summary>
+        /// <returns>The current year.</returns>
+        public int GetCurrentYear()
+        {
+            return DateTime.Today.Year;
+        }
+
+        /// <summary>
+        /// Gets the current month.
+        /// </summary>
+        /// <returns>The current month.</returns>
+        public int GetCurrentMonth()
+        {
+            return DateTime.Today.Month;
+        }
+
+        /// <summary>
         /// Starts a new timer.
         /// </summary>
         /// <param name="onTick">The callback which is called on a tick.</param>

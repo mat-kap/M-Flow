@@ -176,13 +176,14 @@ namespace MFlow.Operation.Domain
         /// Gets all work items.
         /// </summary>
         /// <returns>The work items.</returns>
-        IEnumerable<WorkItem> GetAll()
+        public WorkItem[] GetAll()
         {
             var ids = _Store.GetIds();
             return ids
                 .Select(Get)
                 .Where(o => o != null)
-                .OrderBy(o => o.Name);
+                .OrderBy(o => o.Name)
+                .ToArray();
         }
         
         /// <summary>

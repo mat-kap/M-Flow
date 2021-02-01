@@ -5,6 +5,7 @@ using MFlow.Data;
 using MFlow.Operation.Adapters.Portals;
 using MFlow.Operation.Adapters.Portals.CategoryManagement;
 using MFlow.Operation.Adapters.Portals.DayPlanning;
+using MFlow.Operation.Adapters.Portals.Protocol;
 using MFlow.Operation.Adapters.Portals.Working;
 using MFlow.Operation.Adapters.Providers;
 
@@ -44,15 +45,26 @@ namespace MFlow.Integration
         /// <param name="onExit">Callback which is called on exit.</param>
         public void Run(Action onExit)
         {
+            var notifyIcon = StartNotifyIcon();
+            StartDayPlanning();
+            onExit();
+            notifyIcon?.Dispose();
+        }
+
+        /// <summary>
+        /// Starts the notify icon.
+        /// </summary>
+        /// <returns>The notify icon.</returns>
+        TaskbarIcon StartNotifyIcon()
+        {
             var notifyIconViewModel = new NotifyIconViewModel();
+            notifyIconViewModel.ShowProtocol += OpenWorkingProtocol;
+            
             var notifyIcon = (TaskbarIcon)System.Windows.Application.Current.FindResource("NotifyIcon");
             if (notifyIcon != null)
                 notifyIcon.DataContext = notifyIconViewModel;
 
-            StartDayPlanning();
-            onExit();
-            
-            notifyIcon?.Dispose();
+            return notifyIcon;
         }
         
         /// <summary>
@@ -236,6 +248,55 @@ namespace MFlow.Integration
             view.ShowDialog();
 
             return _Processor.GetCategories();
+        }
+
+        /// <summary>
+        /// Opens the working protocol.
+        /// </summary>
+        void OpenWorkingProtocol()
+        {
+            var viewModel = new WorkingProtocolViewModel();
+            var view = new WorkingProtocolView { DataContext = viewModel };
+
+            viewModel.OpenWorkItemDetails += (id, y, m) =>
+            {
+                OpenWorkItemDetails(id);
+                
+                var items = _Processor.CreateWorkingProtocol(y, m);
+                viewModel.Update(items);
+            };
+            viewModel.DateChanged += (y, m) =>
+            {
+                var items = _Processor.CreateWorkingProtocol(y, m);
+                viewModel.Update(items);
+            };
+            
+            var (years, year, month, workingDays) = _Processor.OpenWorkingProtocol();
+            viewModel.Update(years, year, month);
+            viewModel.Update(workingDays);
+
+            view.ShowDialog();
+        }
+
+        /// <summary>
+        /// Opens the work item details for the specified work item identifier. 
+        /// </summary>
+        /// <param name="id">The work item identifier.</param>
+        void OpenWorkItemDetails(Guid id)
+        {
+            var viewModel = new WorkItemDetailsViewModel();
+            var view = new WorkItemDetailsView {DataContext = viewModel};
+            
+            viewModel.Delete += () =>
+            {
+                _Processor.RemoveDayPoint(id);
+                view.Close();
+            };
+
+            var details = _Processor.OpenWorkItemDetails(id);
+            viewModel.Update(details);
+
+            view.ShowDialog();
         }
         
         #endregion
