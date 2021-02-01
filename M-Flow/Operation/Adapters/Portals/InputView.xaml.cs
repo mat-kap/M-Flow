@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Input;
 
 namespace MFlow.Operation.Adapters.Portals
 {
@@ -24,6 +25,15 @@ namespace MFlow.Operation.Adapters.Portals
             dlg.ShowDialog();
 
             return dlg._UseValue ? dlg.Input.Text : string.Empty;
+        }
+
+        void InputTextBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key != Key.Return)
+                return;
+            
+            _UseValue = true;
+            Close();
         }
 
         void Ok_Click(object sender, RoutedEventArgs e)
