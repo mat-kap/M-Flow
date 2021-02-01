@@ -7,7 +7,7 @@ namespace MFlow.Operation.Adapters.Portals.DayPlanning
 {
     class DayPlanningViewModel : BindableBase
     {
-        ItemViewModel[] _DayPoints;
+        WorkItemViewModel[] _DayPoints;
         Category[] _Categories;
         Category _Category;
         string _Name;
@@ -29,7 +29,7 @@ namespace MFlow.Operation.Adapters.Portals.DayPlanning
             ManageCategoriesCommand = new DelegateCommand(() => ManageCategories?.Invoke());
         }
         
-        public ItemViewModel[] DayPoints
+        public WorkItemViewModel[] DayPoints
         {
             get => _DayPoints;
             set => SetProperty(ref _DayPoints, value);
@@ -85,6 +85,7 @@ namespace MFlow.Operation.Adapters.Portals.DayPlanning
         {
             DayPoints = items
                 .Select(CreateDayPointItem)
+                .OrderBy(o => o.Category)
                 .ToArray();
             
             FinishCommand.Invalidate();
@@ -96,9 +97,11 @@ namespace MFlow.Operation.Adapters.Portals.DayPlanning
             Category = categories.Length > 0 ? categories[0] : null;
         }
         
-        ItemViewModel CreateDayPointItem(WorkItem item)
+        WorkItemViewModel CreateDayPointItem(WorkItem item)
         {
-            return new(item.Id, item.Name, 
+            var category = _Categories.FirstOrDefault(o => o.Id == item.CategoryId);
+            var categoryName = category?.Name ?? "-";
+            return new(item.Id, item.Name, categoryName,
                 () =>
                 {
                     var newName = InputView.Show("Name ändern", "Name", item.Name);

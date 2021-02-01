@@ -7,7 +7,7 @@ namespace MFlow.Operation.Adapters.Portals.CategoryManagement
 {
     class CategoryManagementViewModel : BindableBase
     {
-        ItemViewModel[] _Categories;
+        CategoryViewModel[] _Categories;
         string _Name;
 
         public CategoryManagementViewModel()
@@ -25,7 +25,7 @@ namespace MFlow.Operation.Adapters.Portals.CategoryManagement
                 () => Categories != null && Categories.Length > 0);
         }
 
-        public ItemViewModel[] Categories
+        public CategoryViewModel[] Categories
         {
             get => _Categories;
             set => SetProperty(ref _Categories, value);
@@ -64,7 +64,7 @@ namespace MFlow.Operation.Adapters.Portals.CategoryManagement
             OkCommand.Invalidate();
         }
         
-        ItemViewModel CreateCategoryItem(Category item)
+        CategoryViewModel CreateCategoryItem(Category item)
         {
             return new(item.Id, item.Name, 
                 () =>

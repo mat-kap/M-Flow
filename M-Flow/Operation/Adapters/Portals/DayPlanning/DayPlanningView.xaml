@@ -34,17 +34,26 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         
-                        <TextBlock Grid.Column="0" Text="{Binding Name}" Margin="3" />
-                        <Button Grid.Column="1" ToolTip="Name ändern" Command="{Binding EditCommand}" Margin="1" Padding="2">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Name}" Margin="3,3,3,0" />
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Category}" Margin="13,0,3,3" 
+                                   FontStyle="Italic" Foreground="DimGray" />
+                        
+                        <Button Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" ToolTip="Name ändern" 
+                                Command="{Binding EditCommand}" Margin="1" Padding="2" VerticalAlignment="Center">
                             <Image Height="15" Width="15" Source="../../../../Resources/Edit.png" />
                         </Button>
-                        <Button Grid.Column="2" ToolTip="Eintrag löschen" Command="{Binding RemoveCommand}" Margin="1" Padding="2">
+                        <Button Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" ToolTip="Eintrag löschen" 
+                                Command="{Binding RemoveCommand}" Margin="1" Padding="2" VerticalAlignment="Center">
                             <Image Height="15" Width="15" Source="../../../../Resources/DeleteItem.png" />
                         </Button>
                     </Grid>

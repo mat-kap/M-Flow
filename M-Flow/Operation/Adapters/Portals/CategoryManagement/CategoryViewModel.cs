@@ -2,11 +2,11 @@
 using System.Windows.Input;
 using MFlow.API.MVVM;
 
-namespace MFlow.Operation.Adapters.Portals
+namespace MFlow.Operation.Adapters.Portals.CategoryManagement
 {
-    class ItemViewModel
+    class CategoryViewModel
     {
-        public ItemViewModel(Guid id, string name, Action onChangeName, Action onRemove)
+        public CategoryViewModel(Guid id, string name, Action onChangeName, Action onRemove)
         {
             Id = id;
             Name = name;
