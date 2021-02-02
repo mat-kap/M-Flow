@@ -8,6 +8,7 @@ using MFlow.Operation.Adapters.Portals.DayPlanning;
 using MFlow.Operation.Adapters.Portals.Protocol;
 using MFlow.Operation.Adapters.Portals.Working;
 using MFlow.Operation.Adapters.Providers;
+using Microsoft.Win32;
 
 namespace MFlow.Integration
 {
@@ -270,6 +271,7 @@ namespace MFlow.Integration
                 var items = _Processor.CreateWorkingProtocol(y, m);
                 viewModel.Update(items);
             };
+            viewModel.SaveReport += CreatePerformanceReport;
             
             var (years, year, month, workingDays) = _Processor.OpenWorkingProtocol();
             viewModel.Update(years, year, month);
@@ -297,6 +299,32 @@ namespace MFlow.Integration
             viewModel.Update(details);
 
             view.ShowDialog();
+        }
+
+        /// <summary>
+        /// Creates the performance report.
+        /// </summary>
+        /// <param name="year">The year.</param>
+        /// <param name="month">The month.</param>
+        void CreatePerformanceReport(int year, int month)
+        {
+            var workingDays = _Processor.CreateWorkingProtocol(year, month);
+            var (report, fileName) = Processor.CreatePerformanceReport(workingDays);
+            
+            var dlg = new SaveFileDialog
+            {
+                Title = "Leistungsbericht speichern",
+                Filter = "Textdatei|*.txt",
+                FilterIndex = 0,
+                AddExtension = true,
+                RestoreDirectory = true,
+                FileName = fileName
+            };
+
+            if (dlg.ShowDialog() != true)
+                return;
+
+            File.WriteAllText(dlg.FileName, report);
         }
         
         #endregion

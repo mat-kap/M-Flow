@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using System.Windows.Input;
+using MFlow.API;
 using MFlow.API.MVVM;
 using MFlow.Data;
 
@@ -27,6 +29,7 @@ namespace MFlow.Operation.Adapters.Portals.Protocol
         /// </summary>
         public WorkingProtocolViewModel()
         {
+            SaveReportCommand = new DelegateCommand(() => SaveReport?.Invoke(Year, GetMonthNumber()));
             Months = new[]
             {
                 "Januar",
@@ -100,6 +103,11 @@ namespace MFlow.Operation.Adapters.Portals.Protocol
             get => _WorkingDays;
             private set => SetProperty(ref _WorkingDays, value);
         }
+        
+        /// <summary>
+        /// Gets the save report command.
+        /// </summary>
+        public ICommand SaveReportCommand { get; }
 
         #endregion
 
@@ -114,6 +122,11 @@ namespace MFlow.Operation.Adapters.Portals.Protocol
         /// Raised if the details of a work item should be opened. 
         /// </summary>
         public event Action<Guid, int, int> OpenWorkItemDetails;
+
+        /// <summary>
+        /// Raised if a report should be saved.
+        /// </summary>
+        public event Action<int, int> SaveReport;
 
         #endregion
 

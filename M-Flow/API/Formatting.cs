@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MFlow.Operation.Adapters.Portals.Protocol
+namespace MFlow.API
 {
     /// <summary>
     /// Can format values into string.
@@ -16,7 +16,7 @@ namespace MFlow.Operation.Adapters.Portals.Protocol
         {
             return time.Hours < 1
                 ? $"{time.Minutes:00}min"
-                : $"{time.Hours:00}h {time.Minutes:00}min";
+                : $"{time.Hours:0}h {time.Minutes:#0}min";
         }
     }
 }

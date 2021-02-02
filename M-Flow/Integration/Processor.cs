@@ -230,6 +230,22 @@ namespace MFlow.Integration
             var category = _Categories.Get(workItem.CategoryId);
             return WorkingProtocol.CreateDetails(workItem, category, ConcentrationPhaseDuration);
         }
+
+        /// <summary>
+        /// Creates a performance report for the specified date.
+        /// </summary>
+        /// <param name="workingDays">The working days.</param>
+        /// <returns>The report and the suggested file name.</returns>
+        public static Tuple<string, string> CreatePerformanceReport(WorkingDay[] workingDays)
+        {
+            var (monthName, year) = PerformanceReport.DetermineDate(workingDays);
+            var workingPoints = PerformanceReport.ExtractWorkingPoints(workingDays);
+            var groups = PerformanceReport.CreateGroups(workingPoints);
+            groups = PerformanceReport.CalculateGroupWorkingTimes(groups);
+            var report = PerformanceReport.ComposeReport(monthName, year, groups);
+            var suggestedFileName = PerformanceReport.SuggestFileName(monthName, year);
+            return Tuple.Create(report, suggestedFileName);
+        }
         
         #endregion
         
