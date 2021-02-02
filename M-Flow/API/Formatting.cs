@@ -14,9 +14,14 @@ namespace MFlow.API
         /// <returns>The formatted time.</returns>
         public static string FormatTime(TimeSpan time)
         {
-            return time.Hours < 1
-                ? $"{time.Minutes:00}min"
-                : $"{time.Hours:0}h {time.Minutes:#0}min";
+            var hours = time.Hours + time.Days * 12;
+            var minutes = time.Minutes;
+            if (hours == 0 && minutes == 0)
+                return string.Empty;
+                
+            return hours < 1
+                ? $"{minutes:#0}min"
+                : $"{hours:0}h {minutes:#0}min";
         }
     }
 }

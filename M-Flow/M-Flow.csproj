@@ -20,6 +20,8 @@
       <None Remove="Resources\M-Flow.png" />
       <None Remove="Resources\M-Flow.ico" />
       <Resource Include="Resources\M-Flow.ico" />
+      <None Remove="Resources\ExportReport.png" />
+      <Resource Include="Resources\ExportReport.png" />
     </ItemGroup>
 
     <ItemGroup>
