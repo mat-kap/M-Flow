@@ -18,13 +18,14 @@ namespace MFlow.Operation.Domain
         /// <param name="workItems">The available work items.</param>
         /// <param name="categories">The available categories.</param>
         /// <param name="concentrationPhaseDuration">The duration of a concentration phase.</param>
+        /// <param name="breakPhaseDuration">The break phase duration.</param>
         /// <returns>The working days.</returns>
         public static WorkingDay[] CreateProtocol(int year, int month, IEnumerable<WorkItem> workItems, 
-            Category[] categories, double concentrationPhaseDuration)
+            Category[] categories, double concentrationPhaseDuration, double breakPhaseDuration)
         {
             var workingDates = GetWorkingDates(year, month);
             var workItemsOfMonth = GetWorkItemsOfMonth(year, month, workItems);
-            return CreateWorkingDays(workingDates, workItemsOfMonth, categories,concentrationPhaseDuration);
+            return CreateWorkingDays(workingDates, workItemsOfMonth, categories, concentrationPhaseDuration, breakPhaseDuration);
         }
 
         /// <summary>
@@ -33,14 +34,16 @@ namespace MFlow.Operation.Domain
         /// <param name="workItem">The work item.</param>
         /// <param name="category">The category name.</param>
         /// <param name="concentrationPhaseDuration">The duration of a concentration phase.</param>
+        /// <param name="breakPhaseDuration">The break phase duration.</param>
         /// <returns>The details of the work item.</returns>
-        public static WorkItemDetails CreateDetails(WorkItem workItem, Category category, double concentrationPhaseDuration)
+        public static WorkItemDetails CreateDetails(WorkItem workItem, Category category, 
+            double concentrationPhaseDuration, double breakPhaseDuration)
         {
             var dayGroupedPhases = workItem.WorkingPhases.GroupBy(o => new DateTime(o.Year, o.Month, o.Day));
             var workingDays = dayGroupedPhases.Select(o => new WorkItemDetailsEntry
             {
                 Date = o.Key,
-                Time = TimeSpan.FromMinutes(concentrationPhaseDuration) * o.Count()
+                Time = TimeSpan.FromMinutes(concentrationPhaseDuration + breakPhaseDuration) * o.Count()
             }).ToArray();
             
             return new()
@@ -58,7 +61,7 @@ namespace MFlow.Operation.Domain
         /// <param name="id">The identifier of the category.</param>
         /// <param name="categories">The available categories.</param>
         /// <returns>The category name.</returns>
-        public static string GetCategory(Guid id, IEnumerable<Category> categories)
+        static string GetCategory(Guid id, IEnumerable<Category> categories)
         {
             return categories.FirstOrDefault(o => o.Id == id)?.Name ?? "-";
         }
@@ -103,15 +106,16 @@ namespace MFlow.Operation.Domain
         /// <param name="workItems">The available work items.</param>
         /// <param name="categories">The available categories.</param>
         /// <param name="concentrationPhaseDuration">The duration of a concentration phase.</param>
+        /// <param name="breakPhaseDuration">The break phase duration.</param>
         /// <returns>The working days.</returns>
         static WorkingDay[] CreateWorkingDays(IEnumerable<DateTime> workingDates, WorkItem[] workItems, 
-            Category[] categories, double concentrationPhaseDuration)
+            Category[] categories, double concentrationPhaseDuration, double breakPhaseDuration)
         {
             var days = CreateEmptyWorkingDays(workingDates);
             SortWorkItemsIntoDays(days, workItems, (d, o) =>
             {
                 var category = GetCategory(o.CategoryId, categories);
-                CreateWorkingPoint(d, o, category, concentrationPhaseDuration);
+                CreateWorkingPoint(d, o, category, concentrationPhaseDuration, breakPhaseDuration);
             });
             CalculateTotalWorkingTime(days);
             return days;
@@ -163,9 +167,13 @@ namespace MFlow.Operation.Domain
         /// <param name="item">The work item.</param>
         /// <param name="category">The category name.</param>
         /// <param name="concentrationPhaseDuration">The duration of a concentration phase.</param>
-        static void CreateWorkingPoint(WorkingDay day, WorkItem item, string category, double concentrationPhaseDuration)
+        /// <param name="breakPhaseDuration">The break phase duration.</param>
+        static void CreateWorkingPoint(WorkingDay day, WorkItem item, string category, 
+            double concentrationPhaseDuration, double breakPhaseDuration)
         {
-            var workingTime = TimeSpan.FromMinutes(concentrationPhaseDuration) * item.WorkingPhases.Count(o => o.Day == day.Date.Day);
+            var workingTime = TimeSpan.FromMinutes(concentrationPhaseDuration + breakPhaseDuration) *
+                              item.WorkingPhases.Count(o => o.Day == day.Date.Day);
+            
             day.WorkingPoints.Add(new WorkingPoint
             {
                 Id = item.Id,

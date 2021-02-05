@@ -185,7 +185,7 @@ namespace MFlow.Integration
             var viewModel = new BreakViewModel();
             var view = new BreakView { DataContext = viewModel };
 
-            view.Loaded += (_, _) => ViewLocationManager.Add(view); // SetupLocationToRightBottom(view);
+            view.Loaded += (_, _) => ViewLocationManager.Add(view);
 
             var cancelToken = _Processor.StartBreak(
                 (elapsed, progress) => viewModel.Update(elapsed, progress),
@@ -195,6 +195,12 @@ namespace MFlow.Integration
             {
                 view.Close();
                 _Processor.FinishPoint(id);
+                StartWork();
+            };
+
+            viewModel.ChangePoint += () =>
+            {
+                view.Close();
                 StartWork();
             };
 

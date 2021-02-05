@@ -202,7 +202,9 @@ namespace MFlow.Integration
             var workItems = _WorkItems.GetAll();
             var years = workItems.SelectMany(o => o.WorkingPhases).Select(o => o.Year).Distinct().ToArray();
             var categories = _Categories.GetAll();
-            var workingDays = WorkingProtocol.CreateProtocol(year, month, workItems, categories, ConcentrationPhaseDuration);
+            var workingDays = WorkingProtocol.CreateProtocol(year, month, workItems, categories,
+                ConcentrationPhaseDuration, BreakPhaseDuration);
+            
             return Tuple.Create(years, year, month, workingDays);
         }
         
@@ -216,7 +218,8 @@ namespace MFlow.Integration
         {
             var workItems = _WorkItems.GetAll();
             var categories = _Categories.GetAll();
-            return WorkingProtocol.CreateProtocol(year, month, workItems, categories, ConcentrationPhaseDuration);
+            return WorkingProtocol.CreateProtocol(year, month, workItems, categories, ConcentrationPhaseDuration,
+                BreakPhaseDuration);
         }
 
         /// <summary>
@@ -228,7 +231,7 @@ namespace MFlow.Integration
         {
             var workItem = _WorkItems.Get(workItemId);
             var category = _Categories.Get(workItem.CategoryId);
-            return WorkingProtocol.CreateDetails(workItem, category, ConcentrationPhaseDuration);
+            return WorkingProtocol.CreateDetails(workItem, category, ConcentrationPhaseDuration, BreakPhaseDuration);
         }
 
         /// <summary>

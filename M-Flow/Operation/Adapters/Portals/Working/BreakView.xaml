@@ -1,7 +1,7 @@
 ﻿<Window x:Class="MFlow.Operation.Adapters.Portals.Working.BreakView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Pause" SizeToContent="Height" Width="400" WindowStyle="ToolWindow" ResizeMode="NoResize"
+        Title="Pause" SizeToContent="Height" Width="450" WindowStyle="ToolWindow" ResizeMode="NoResize"
         Background="WhiteSmoke" Topmost="True" Icon="/Resources/M-Flow.ico">
     
     <Grid Margin="10">
@@ -19,10 +19,12 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             
             <Button Grid.Column="0" Content="Punkt abschließen" Command="{Binding FinishPointCommand}" Margin="3" Padding="10" />
-            <Button Grid.Column="1" Content="Nächste Phase" Command="{Binding NextPhaseCommand}" Margin="3" Padding="10" />
+            <Button Grid.Column="1" Content="Punkt wechseln" Command="{Binding ChangePointCommand}" Margin="3" Padding="10" />
+            <Button Grid.Column="2" Content="Nächste Phase" Command="{Binding NextPhaseCommand}" Margin="3" Padding="10" />
         </Grid>
     </Grid>
 </Window>
