@@ -10,6 +10,7 @@ namespace MFlow.Operation.Adapters.Portals.Working
     {
         #region Fields
 
+        string _ActiveName;
         string _ElapsedTime;
         double _Progress;
         bool _IsTimeElapsed;
@@ -39,6 +40,15 @@ namespace MFlow.Operation.Adapters.Portals.Working
         #endregion
 
         #region Properties
+
+        /// <summary>
+        /// Gets the active point name.
+        /// </summary>
+        public string ActiveName
+        {
+            get => _ActiveName;
+            private set => SetProperty(ref _ActiveName, value);
+        }
 
         /// <summary>
         /// Gets the elapsed time.
@@ -105,6 +115,15 @@ namespace MFlow.Operation.Adapters.Portals.Working
         {
             ElapsedTime = $"{elapsedTime.Minutes:00}:{elapsedTime.Seconds:00}";
             Progress = progress;
+        }
+
+        /// <summary>
+        /// Updates the view.
+        /// </summary>
+        /// <param name="activeName">The name of the active point.</param>
+        public void Update(string activeName)
+        {
+            ActiveName = activeName;
         }
 
         /// <summary>

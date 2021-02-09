@@ -7,15 +7,18 @@
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="40" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         
-        <TextBlock Grid.Row="0" Text="{Binding ElapsedTime}" FontSize="25" 
+        <TextBlock Grid.Row="0" Text="{Binding ActiveName}" FontSize="16" 
+                   VerticalAlignment="Center" Margin="6" TextWrapping="Wrap" />
+        <TextBlock Grid.Row="1" Text="{Binding ElapsedTime}" FontSize="25" 
                    HorizontalAlignment="Center" VerticalAlignment="Center" Margin="6" />
-        <ProgressBar Grid.Row="1" Minimum="0" Maximum="100" Value="{Binding Progress, Mode=OneWay}" Margin="6" />
+        <ProgressBar Grid.Row="2" Minimum="0" Maximum="100" Value="{Binding Progress, Mode=OneWay}" Margin="6" />
         
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />

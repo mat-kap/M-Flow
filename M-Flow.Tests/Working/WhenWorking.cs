@@ -108,13 +108,14 @@ namespace M_Flow.Tests.Working
         {
             var eventStore = TestFactory.CreateEventStore();
             var timeServer = TestFactory.CreateTimeServer();
+            var workItems = TestFactory.CreateTestWorkItems();
 
             var sut = new Processor(eventStore, timeServer);
 
             var isFinished = false;
             var elapsedTime = TimeSpan.Zero;
             var elapsedProgress = 0.0;
-            sut.StartBreak(
+            sut.StartBreak(workItems[0].Id,
                 (time, progress) =>
                 {
                     elapsedTime = time;
@@ -147,13 +148,14 @@ namespace M_Flow.Tests.Working
         {
             var eventStore = TestFactory.CreateEventStore();
             var timeServer = TestFactory.CreateTimeServer();
+            var workItems = TestFactory.CreateTestWorkItems();
 
             var sut = new Processor(eventStore, timeServer);
 
             var isFinished = false;
             var elapsedTime = TimeSpan.Zero;
             var elapsedProgress = 0.0;
-            var cancelToken = sut.StartBreak(
+            var (name, cancelToken) = sut.StartBreak(workItems[0].Id,
                 (time, progress) =>
                 {
                     elapsedTime = time;

@@ -123,12 +123,17 @@ namespace MFlow.Integration
         /// <summary>
         /// Starts the concentration phase on a day point.
         /// </summary>
+        /// <param name="id">The identifier of the day point.</param>
         /// <param name="onProgress">The callback which is called on a progress.</param>
         /// <param name="onFinished">The callback which is called if the concentration is finished.</param>
-        /// <returns>The cancellation token.</returns>
-        public CancelToken StartBreak(Action<TimeSpan, double> onProgress, Action onFinished)
+        /// <returns>The name and the cancellation token.</returns>
+        public Tuple<string, CancelToken> StartBreak(Guid id, Action<TimeSpan, double> onProgress, Action onFinished)
         {
-            return WorkTracker.StartPhase(TimeSpan.FromMinutes(BreakPhaseDuration), onProgress, onFinished, _TimeServer);
+            var cancelToken = WorkTracker.StartPhase(TimeSpan.FromMinutes(BreakPhaseDuration), onProgress, onFinished, _TimeServer);
+            
+            var workItem = _WorkItems.Get(id);
+            var (name, _) = WorkTracker.GetWorkItemDescription(workItem);
+            return Tuple.Create(name, cancelToken);
         }
 
         /// <summary>

@@ -187,9 +187,11 @@ namespace MFlow.Integration
 
             view.Loaded += (_, _) => ViewLocationManager.Add(view);
 
-            var cancelToken = _Processor.StartBreak(
+            var (name, cancelToken) = _Processor.StartBreak(id,
                 (elapsed, progress) => viewModel.Update(elapsed, progress),
                 () => view.Dispatcher.BeginInvoke(new Action(viewModel.SetTimeElapsed)));
+            
+            viewModel.Update(name);
 
             viewModel.FinishPoint += () =>
             {
