@@ -279,6 +279,11 @@ namespace MFlow.Integration
                 var items = _Processor.CreateWorkingProtocol(y, m);
                 viewModel.Update(items);
             };
+            viewModel.AddManualPoint += (y, m) =>
+            {
+                var items = AddManualPoint(y, m);
+                viewModel.Update(items);
+            };
             viewModel.SaveReport += CreatePerformanceReport;
             
             var (years, year, month, workingDays) = _Processor.OpenWorkingProtocol();
@@ -333,6 +338,33 @@ namespace MFlow.Integration
                 return;
 
             File.WriteAllText(dlg.FileName, report);
+        }
+
+        /// <summary>
+        /// Adds a manual point.
+        /// </summary>
+        /// <param name="year">The current year.</param>
+        /// <param name="month">The current month.</param>
+        /// <returns>The possibly changed working days.</returns>
+        WorkingDay[] AddManualPoint(int year, int month)
+        {
+            var viewModel = new AddManualPointViewModel();
+            var view = new AddManualPointView {DataContext = viewModel};
+            
+            viewModel.CancelAdding += () => view.Close();
+            viewModel.AddManualPoint += (date, name, category, workingHours) =>
+            {
+                _Processor.AddManualPoint(date, name, category, workingHours);
+                view.Close();
+            };
+
+            var categories = _Processor.GetCategories();
+            viewModel.Update(categories);
+            viewModel.Update(year, month);
+
+            view.ShowDialog();
+
+            return _Processor.CreateWorkingProtocol(year, month);
         }
         
         #endregion

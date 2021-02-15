@@ -71,13 +71,14 @@ namespace MFlow.Operation.Domain
         /// Finishes a working phase on the work item with the specified identifier.
         /// </summary>
         /// <param name="id">The identifier of the work item.</param>
-        public void FinishPhase(Guid id)
+        /// <param name="timeStamp">The time stamp.</param>
+        public void FinishPhase(Guid id, DateTime timeStamp)
         {
             _Store.Set(new Event
             {
                 Type = "WorkingPhaseFinished",
                 EntityId = id,
-                TimeStamp = DateTime.Now
+                TimeStamp = timeStamp
             });
         }
 
@@ -85,13 +86,14 @@ namespace MFlow.Operation.Domain
         /// Finishes the work on the work item with the specified identifier.
         /// </summary>
         /// <param name="id">The identifier of the work item.</param>
-        public void FinishWork(Guid id)
+        /// <param name="timeStamp">The time stamp.</param>
+        public void FinishWork(Guid id, DateTime timeStamp)
         {
             _Store.Set(new Event
             {
                 Type = "DayPointFinished",
                 EntityId = id,
-                TimeStamp = DateTime.Now
+                TimeStamp = timeStamp
             });
         }
 
@@ -100,19 +102,23 @@ namespace MFlow.Operation.Domain
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="categoryId">The identifier of the category.</param>
-        public void CreateWorkItem(string name, Guid categoryId)
+        /// <param name="timeStamp">The time stamp.</param>
+        /// <returns>The identifier of the creates work item.</returns>
+        public Guid CreateWorkItem(string name, Guid categoryId, DateTime timeStamp)
         {
+            var id = Guid.NewGuid();
             _Store.Set(new Event
             {
                 Type = "DayPointCreated",
-                EntityId = Guid.NewGuid(),
-                TimeStamp = DateTime.Now,
+                EntityId = id,
+                TimeStamp = timeStamp,
                 Data = new()
                 {
                     { "Name", name },
                     { "CategoryId", categoryId.ToString() }
                 }
             });
+            return id;
         }
 
         /// <summary>
@@ -186,6 +192,30 @@ namespace MFlow.Operation.Domain
                 .ToArray();
         }
         
+        /// <summary>
+        /// Generates the working phases.
+        /// </summary>
+        /// <param name="start">The start time stamp.</param>
+        /// <param name="workingHours">The working hours.</param>
+        /// <param name="concentrationPhaseDuration">The duration of the concentration phase.</param>
+        /// <param name="breakPhaseDuration">The duration of the break phase.</param>
+        /// <param name="onPhase">Called when a new phase is generated.</param>
+        /// <returns>The finished time stamp.</returns>
+        public static DateTime GenerateWorkingPhases(DateTime start, int workingHours, double concentrationPhaseDuration, double breakPhaseDuration, Action<DateTime> onPhase)
+        {
+            var timeStamp = start;
+            
+            var phaseDuration = concentrationPhaseDuration + breakPhaseDuration;
+            var phaseCount = Convert.ToInt32(workingHours / (phaseDuration / 60.0));
+            for (var phase = 0; phase < phaseCount; phase++)
+            {
+                timeStamp = start + (phase + 1) * TimeSpan.FromMinutes(phaseDuration);
+                onPhase(timeStamp);
+            }
+
+            return timeStamp;
+        }
+
         /// <summary>
         /// Gets the unfinished work items out of the specified items. 
         /// </summary>

@@ -60,7 +60,7 @@ namespace MFlow.Integration
         /// <returns>The day points.</returns>
         public WorkItem[] AddNewDayPoint(string name, Category category)
         {
-            _WorkItems.CreateWorkItem(name, category.Id);
+            _WorkItems.CreateWorkItem(name, category.Id, DateTime.Now);
             return _WorkItems.GetDayPoints();
         }
 
@@ -111,7 +111,7 @@ namespace MFlow.Integration
         {
             var cancelToken = WorkTracker.StartPhase(TimeSpan.FromMinutes(ConcentrationPhaseDuration), onProgress, () =>
             {
-                _WorkItems.FinishPhase(id);
+                _WorkItems.FinishPhase(id, DateTime.Now);
                 onFinished();
             }, _TimeServer);
             
@@ -142,7 +142,7 @@ namespace MFlow.Integration
         /// <param name="id">The identifier of the day point.</param>
         public void FinishPoint(Guid id)
         {
-            _WorkItems.FinishWork(id);
+            _WorkItems.FinishWork(id, DateTime.Now);
         }
 
         #endregion
@@ -240,6 +240,23 @@ namespace MFlow.Integration
         }
 
         /// <summary>
+        /// Adds a manual point.
+        /// </summary>
+        /// <param name="date">The date of the point.</param>
+        /// <param name="name">The name of the point.</param>
+        /// <param name="category">The category of the point.</param>
+        /// <param name="workingHours">The working hours of the point.</param>
+        public void AddManualPoint(DateTime date, string name, Category category, int workingHours)
+        {
+            var id = _WorkItems.CreateWorkItem(name, category.Id, date);
+
+            var finishTimeStamp = WorkItemManager.GenerateWorkingPhases(date, workingHours, ConcentrationPhaseDuration,
+                BreakPhaseDuration, o => _WorkItems.FinishPhase(id, o));
+            
+            _WorkItems.FinishWork(id, finishTimeStamp);
+        }
+
+        /// <summary>
         /// Creates a performance report for the specified date.
         /// </summary>
         /// <param name="workingDays">The working days.</param>
@@ -254,7 +271,7 @@ namespace MFlow.Integration
             var suggestedFileName = PerformanceReport.SuggestFileName(monthName, year);
             return Tuple.Create(report, suggestedFileName);
         }
-        
+
         #endregion
         
         #endregion

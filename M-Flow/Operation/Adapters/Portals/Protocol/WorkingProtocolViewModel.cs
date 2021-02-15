@@ -29,6 +29,7 @@ namespace MFlow.Operation.Adapters.Portals.Protocol
         /// </summary>
         public WorkingProtocolViewModel()
         {
+            AddManualPointCommand = new DelegateCommand(() => AddManualPoint?.Invoke(Year, GetMonthNumber()));
             SaveReportCommand = new DelegateCommand(() => SaveReport?.Invoke(Year, GetMonthNumber()));
             Months = new[]
             {
@@ -105,6 +106,11 @@ namespace MFlow.Operation.Adapters.Portals.Protocol
         }
         
         /// <summary>
+        /// Gets the add manual point command.
+        /// </summary>
+        public ICommand AddManualPointCommand { get; }
+        
+        /// <summary>
         /// Gets the save report command.
         /// </summary>
         public ICommand SaveReportCommand { get; }
@@ -123,6 +129,11 @@ namespace MFlow.Operation.Adapters.Portals.Protocol
         /// </summary>
         public event Action<Guid, int, int> OpenWorkItemDetails;
 
+        /// <summary>
+        /// Raised if a manual point should be added.
+        /// </summary>
+        public event Action<int, int> AddManualPoint;
+        
         /// <summary>
         /// Raised if a report should be saved.
         /// </summary>

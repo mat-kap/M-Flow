@@ -1,0 +1,51 @@
+﻿<Window x:Class="MFlow.Operation.Adapters.Portals.Protocol.AddManualPointView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Manueller Tagespunkt" Width="800" SizeToContent="Height" Background="WhiteSmoke"
+        WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow" Icon="/Resources/M-Flow.ico">
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        
+        <Grid Grid.Row="0" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Name" Margin="3" Padding="3" />
+            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="3" Padding="3" />
+            
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Kategorie" Margin="3" Padding="3" />
+            <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Categories}" SelectedItem="{Binding Category}" Margin="3" Padding="3" />
+            
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Datum" Margin="3" Padding="3" />
+            <DatePicker Grid.Row="2" Grid.Column="1" SelectedDate="{Binding Date}" Margin="3" Padding="3" />
+            
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Zeit (h)" Margin="3" Padding="3" />
+            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding WorkingHours, UpdateSourceTrigger=PropertyChanged}" Margin="3" Padding="3" />
+        </Grid>
+
+        <Border Grid.Row="1" BorderThickness="0,1,0,0" BorderBrush="Black" Background="White" Margin="0,25,0,0" Padding="6">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                
+                <Button Grid.Column="1" Content="OK" Command="{Binding OkCommand}" Margin="3" Padding="10,3" />
+                <Button Grid.Column="2" Content="Abbrechen" Command="{Binding CancelCommand}" Margin="3" Padding="10,3" />
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
